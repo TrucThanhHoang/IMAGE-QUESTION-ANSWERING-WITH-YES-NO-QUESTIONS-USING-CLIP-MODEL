@@ -1,0 +1,54 @@
+\chapter{Phương pháp thực nghiệm}
+\label{chap:method}
+
+Trong chương này, chúng tôi trình bày phương pháp tiếp cận được sử dụng trong nghiên cứu, bao gồm mô hình nền tảng, quy trình xử lý dữ liệu và kiến trúc hệ thống. Cụ thể, chúng tôi áp dụng mô hình CLIP cho bài toán Visual Question Answering (VQA). 
+
+\section{Tổng quan về mô hình CLIP}
+CLIP (Contrastive Language–Image Pretraining) được OpenAI giới thiệu nhằm học biểu diễn chung cho cả ảnh và văn bản. Mô hình này bao gồm hai thành phần chính:  
+\begin{itemize}
+    \item \textbf{Image Encoder}: Thường sử dụng ResNet hoặc Vision Transformer (ViT) để trích xuất đặc trưng ảnh.  
+    \item \textbf{Text Encoder}: Thường sử dụng Transformer để mã hoá văn bản thành vector đặc trưng.  
+\end{itemize}
+
+Mục tiêu huấn luyện của CLIP là tối đa hóa độ tương đồng cosine giữa ảnh và văn bản mô tả đúng, đồng thời giảm tương đồng với các cặp không khớp.  
+
+\section{Ứng dụng CLIP trong VQA}
+Đối với bài toán VQA, CLIP được tận dụng để ánh xạ cả ảnh và câu hỏi về cùng một không gian đặc trưng. Phương pháp tiếp cận gồm các bước sau:  
+
+\begin{enumerate}
+    \item \textbf{Trích xuất đặc trưng ảnh}: Ảnh đầu vào được đưa qua Image Encoder để thu được vector đặc trưng.  
+    \item \textbf{Trích xuất đặc trưng câu hỏi}: Câu hỏi được đưa qua Text Encoder để thu được vector đặc trưng.  
+    \item \textbf{Kết hợp đặc trưng}: Hai vector đặc trưng (ảnh và câu hỏi) được kết hợp (concatenate hoặc attention-based fusion).  
+    \item \textbf{Dự đoán câu trả lời}: Vector kết hợp được đưa vào một lớp phân loại (hoặc module sinh văn bản) để dự đoán câu trả lời.  
+\end{enumerate}
+
+\section{Quy trình xử lý dữ liệu}
+Trước khi đưa vào mô hình, dữ liệu được xử lý theo các bước:  
+\begin{itemize}
+    \item \textbf{Ảnh}: Resize về kích thước cố định, chuẩn hoá giá trị pixel, áp dụng một số phép augmentation (nếu cần).  
+    \item \textbf{Câu hỏi}: Làm sạch văn bản, tokenization, padding/truncation để phù hợp độ dài tối đa của encoder.  
+    \item \textbf{Câu trả lời}: Với các mô hình phân loại, tập câu trả lời được chuẩn hoá và gán nhãn; với mô hình sinh, câu trả lời được xử lý như chuỗi văn bản.  
+\end{itemize}
+
+\section{Kiến trúc hệ thống đề xuất}
+Mô hình thực nghiệm được xây dựng dựa trên CLIP với pipeline như sau:  
+
+\begin{enumerate}
+    \item Input: Ảnh và câu hỏi.  
+    \item Image Encoder (CLIP) $\rightarrow$ Vector đặc trưng ảnh.  
+    \item Text Encoder (CLIP) $\rightarrow$ Vector đặc trưng câu hỏi.  
+    \item Module kết hợp (fusion).  
+    \item Lớp phân loại softmax $\rightarrow$ dự đoán câu trả lời.  
+\end{enumerate}
+
+Sơ đồ khối của hệ thống có thể minh họa như Hình~\ref{fig:clip-vqa-pipeline}.  
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/clip_vqa_pipeline.png}
+    \caption{Pipeline ứng dụng CLIP cho bài toán VQA}
+    \label{fig:clip-vqa-pipeline}
+\end{figure}
+
+\section{Tóm tắt}
+Trong chương này, chúng tôi đã trình bày phương pháp thực nghiệm với mô hình CLIP, bao gồm nguyên lý hoạt động, cách áp dụng vào VQA, quy trình xử lý dữ liệu và kiến trúc hệ thống. Các bước này sẽ được triển khai và đánh giá trong Chương~\ref{chap:experiment}.

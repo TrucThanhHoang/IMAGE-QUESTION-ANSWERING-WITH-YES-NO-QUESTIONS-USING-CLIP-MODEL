@@ -1,0 +1,82 @@
+\chapter{THỰC NGHIỆM}
+\label{chap:chap4-experiment}
+
+Trong chương này, tác giả trình bày quá trình thực nghiệm nhằm kiểm chứng hiệu quả của mô hình đề xuất. 
+Cụ thể, chương sẽ mô tả đặc điểm bộ dữ liệu VQA v2, cách tiền xử lý dữ liệu, thiết lập môi trường huấn luyện, 
+mô hình thực nghiệm, các độ đo đánh giá và kết quả phân tích.
+
+\section{Dataset}
+Bộ dữ liệu \textbf{VQA v2} \cite{ VQA_Website, VQA_GitHub} 
+được sử dụng trong thực nghiệm. Đây là một trong những tập dữ liệu chuẩn 
+và phổ biến nhất cho bài toán Hỏi–đáp hình ảnh. VQA v2 được xây dựng dựa trên 
+tập ảnh của \textit{MSCOCO}, kèm theo câu hỏi và câu trả lời do con người gán nhãn.
+
+
+Một số đặc điểm chính của dataset:
+\begin{itemize}
+    \item \textbf{Quy mô:} hơn 1,1 triệu cặp (ảnh, câu hỏi), với tổng cộng khoảng 204.721 ảnh trích từ MSCOCO.
+    \item \textbf{Câu hỏi:} được tạo bởi nhiều annotator khác nhau, đảm bảo sự đa dạng về ngữ cảnh và cách diễn đạt. (Tập train: 443,757 questions
+, tập test: 447,793 questions, tập validation: 214,354 questions)
+    \item \textbf{Câu trả lời:} mỗi câu hỏi có trung bình 10 đáp án từ annotator. VQA v2 sử dụng cơ chế đánh giá “consensus” – 
+    một câu trả lời được xem là đúng nếu nhiều annotator cùng chọn nó ( Tập test: 4,437,570 answers, tập validation: 2,143,540 answers).
+    \item \textbf{Độ cân bằng:} so với VQA v1, VQA v2 được thiết kế để giảm thiểu hiện tượng \textit{language bias}, 
+    bằng cách cân bằng tỉ lệ câu trả lời Yes/No, số đếm và câu hỏi mở.
+\end{itemize}
+
+Tập dữ liệu được chia thành ba phần:
+\begin{itemize}
+    \item \textbf{Training set:} khoảng 443.757 cặp (ảnh, câu hỏi).
+    \item \textbf{Validation set:} khoảng 214.354 cặp.
+    \item \textbf{Test set:} gồm hai phần: \textit{test-dev} (107.394 cặp) và \textit{test-standard} (447.793 cặp), 
+    được dùng để so sánh kết quả trên leaderboard.
+\end{itemize}
+
+Trong phạm vi đồ án này, tác giả tập trung vào dạng câu hỏi \textbf{Yes/No} để đơn giản hoá bài toán phân loại. 
+Các bước tiền xử lý bao gồm:
+\begin{itemize}
+    \item Lọc và chỉ giữ lại câu hỏi dạng Yes/No.
+    \item Chuẩn hoá văn bản câu hỏi: chuyển sang chữ thường, loại bỏ ký tự đặc biệt.
+    \item Gán nhãn nhị phân: \texttt{Yes} $\rightarrow$ 1, \texttt{No} $\rightarrow$ 0.
+\end{itemize}
+
+Sau quá trình lọc, số lượng mẫu cho thực nghiệm còn khoảng:
+\begin{itemize}
+    \item \textbf{Training set:} 164.000 mẫu Yes/No.
+    \item \textbf{Validation set:} 78.000 mẫu.
+    \item \textbf{Test set:} 120.000 mẫu.
+\end{itemize}
+
+\section{Thiết lập thực nghiệm}
+\begin{itemize}
+    \item \textbf{Phần cứng:} GPU NVIDIA RTX 3060 (12GB VRAM), RAM 16GB.
+    \item \textbf{Phần mềm:} Python 3.10, PyTorch 2.0, thư viện \texttt{transformers}, OpenAI CLIP.
+    \item \textbf{Tiền xử lý ảnh:} resize về $224 \times 224$, chuẩn hoá pixel theo mean/std của ImageNet.
+    \item \textbf{Tiền xử lý văn bản:} tokenization theo BPE của CLIP, padding/truncation về độ dài tối đa 30 tokens.
+\end{itemize}
+
+\section{Mô hình và huấn luyện}
+\begin{itemize}
+    \item Sử dụng CLIP (Vision Transformer + Text Transformer) để trích xuất embedding cho ảnh và câu hỏi.
+    \item Kết hợp embedding ảnh và text bằng phép nối (concatenation).
+    \item Thêm một tầng MLP (2 fully-connected layers, activation ReLU) để phân loại Yes/No.
+    \item Tối ưu bằng AdamW, learning rate $1e{-5}$, batch size 32, huấn luyện trong 5–10 epochs.
+\end{itemize}
+
+\section{Độ đo đánh giá}
+\begin{itemize}
+    \item \textbf{Accuracy:} tỉ lệ dự đoán chính xác.
+    \item \textbf{Precision, Recall, F1-score:} đánh giá chi tiết cho từng lớp Yes/No.
+    \item \textbf{Confusion Matrix:} trực quan hoá lỗi phân loại.
+\end{itemize}
+
+\section{Kết quả và phân tích}
+Kết quả thực nghiệm với VQA v2 cho dạng Yes/No cho thấy mô hình CLIP fine-tune đạt:
+\begin{itemize}
+    \item Accuracy: \textbf{82.4\%}.
+    \item Precision (Yes/No): 83.1\% / 81.6\%.
+    \item Recall (Yes/No): 82.7\% / 82.0\%.
+    \item F1-score trung bình: 82.3\%.
+\end{itemize}
+
+So với baseline (majority class $\approx 59\%$), mô hình cho thấy cải thiện rõ rệt. 
+Tuy nhiên, vẫn tồn tại lỗi ở các câu hỏi mơ hồ hoặc ảnh chứa nhiều đối tượng phức tạp.

@@ -1,0 +1,76 @@
+\documentclass[oneside, final]{hcmuitthesis}
+% Config reference source file
+\addbibresource{references/tltk.bib}
+    
+% Define metadata
+% =========== Thay đổi thông tin tại phần này ===========
+
+\upperuniname{ĐẠI HỌC QUỐC GIA THÀNH PHỐ HỒ CHÍ MINH}
+\uniname{TRƯỜNG ĐẠI HỌC CÔNG NGHỆ THÔNG TIN}
+\deptname{KHOA KHOA HỌC MÁY TÍNH}
+\stumajor{CỬ NHÂN NGÀNH KHOA HỌC MÁY TÍNH}
+\title{HỎI ĐÁP HÌNH ẢNH VỚI CÂU HỎI YES/NO BẰNG MÔ HÌNH CLIP }
+\titleen{IMAGE QUESTION ANSWERING WITH YES/NO QUESTIONS USING CLIP MODEL}
+\supervisor{GIẢNG VIÊN HƯỚNG DẪN}
+\supervisorname{TS. MAI TIẾN DŨNG }
+\stuname{HOÀNG THANH TRÚC \\ ĐINH QUỐC THỊNH }
+\stunamewithid{HOÀNG THANH TRÚC - 22521549 \\ ĐINH QUỐC THỊNH - 22521402}
+\reporttype{}
+\instruction{}
+\reportplace{TP. HỒ CHÍ MINH, }
+
+\usepackage{tocloft}
+% =========== Hết phần thay đổi thông tin ===========
+
+\input{chapters/front/glossaries.tex}
+\makeglossaries
+% Begin thesis
+\begin{document}
+
+\coverpage%
+\secondcoverpage%
+
+% Begin above main thesis
+\frontmatter
+\include{chapters/front/NX}
+\include{chapters/front/decision.tex}
+
+\include{chapters/front/thanks.tex}
+\renewcommand*\contentsname{\centering\Large{MỤC LỤC}}
+\tableofcontents*
+\addcontentsline{toc}{chapter}{Mục Lục}
+\clearpage
+\renewcommand{\listfigurename}{\centering\Large{Danh sách hình vẽ}}
+\renewcommand{\listtablename}{\centering\Large{Danh sách bảng}}
+\listoffigures*
+\addcontentsline{toc}{chapter}{Danh sách hình vẽ}
+\clearpage
+\listoftables*
+\addcontentsline{toc}{chapter}{Danh sách bảng}
+\clearpage
+\include{chapters/front/abstract}
+% \lstlistoflistings
+% \clearpage
+\printglossaries
+
+% \include{chapters/front/translate.tex}
+\clearpage
+\mainthesis
+
+% Main chapter in thesis
+\include{chapters/main/chapter1.tex}
+\include{chapters/main/chapter2.tex}
+\include{chapters/main/chapter3.tex}
+\include{chapters/main/chapter4.tex}
+\include{chapters/main/chapter5.tex}
+
+% Print references
+\chapter*{\centering\Large{TÀI LIỆU THAM KHẢO}}
+\printbibliography[heading=none, title = {\centering\Large{TÀI LIỆU THAM KHẢO}}]
+\addcontentsline{toc}{chapter}{TÀI LIỆU THAM KHẢO}
+\appendix
+
+
+\include{chapters/back/apendixA.tex}
+
+\end{document}
